@@ -12,10 +12,11 @@
 const array = []
 function forEach(array, fn) {
   for (let i = 0; i < array.length; i++) {
-    fn(array[i])
+    fn(array[i], i, array)
   }
   return array
 }
+forEach(array, fn)
 
 /*
  Задание 2:
@@ -29,11 +30,12 @@ function forEach(array, fn) {
 const newArray = []
 function map(array, fn) {
   for (let i = 0; i < array.length; i++) {
-    newArray.push(fn(array[i]))
+    // newArray.push(fn(array[i]))
+    newArray[i] = fn(array[i], i, array)
   }
   return newArray
 }
-newArray = map()
+newArray = map(array, fn)
 
 /*
  Задание 3:
@@ -44,14 +46,16 @@ newArray = map()
  Пример:
    reduce([1, 2, 3], (all, current) => all + current) // 6
  */
-const reduceValue
+let initialValue
 function reduce(array, fn, initial) {
+  initialValue = (initial !== undefined) ? initial : array[0];
   for (let i = 0; i < array.length; i++) {
-    fn(array[i], initial)
+    initial ? i : i = 1;
+    initialValue = fn(initialValue, array[i], i, array)
   }
-  return initial
+  return initialValue
 }
-reduceValue = reduce()
+initialValue = reduce(array, fn, initial)
 
 /*
  Задание 4:
@@ -66,6 +70,7 @@ function upperProps(obj) {
   for (key in obj) {
     upperArray.push(key.toUpperCase)
   }
+  return upperArray
 }
 
 /*
@@ -89,6 +94,9 @@ function createProxy(obj) {
       }
     }
   }
+  // метод set
+  // obj.set = (a,b,c) => {}
+  return obj
 }
 
 export { forEach, map, reduce, upperProps, createProxy };
