@@ -23,7 +23,7 @@
  Запрещено использовать сторонние библиотеки. Разрешено пользоваться только тем, что встроено в браузер
  */
 
-import './cookie.html';
+// import './cookie.html';
 
 /*
  app - это контейнер для всех ваших домашних заданий
@@ -45,8 +45,97 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-filterNameInput.addEventListener('input', function () {});
 
-addButton.addEventListener('click', () => {});
+let cookieArray = document.cookie.split('; ');
+let cookieRow = null;
+
+const cookie = {
+  row() {
+    cookieRow = document.createElement('tr');
+    listTable.append(cookieRow);
+  },
+  name(name) {
+    const cookieName = document.createElement('td');
+    cookieName.textContent = `${name}`;
+    if (cookieRow) {
+      cookieRow.append(cookieName)
+    } else {
+      console.log('строка не создана!')
+    }
+  },
+  value(value) {
+    const cookieValue = document.createElement('td');
+    cookieValue.textContent = `${value}`;
+    if (cookieRow) {
+      cookieRow.append(cookieValue)
+    } else {
+      console.log('строка не создана!')
+    }
+  },
+  delete(name) {
+    const cookieDelete = document.createElement('td');
+    cookieRow.append(cookieDelete);
+    const cookieDeleteBtn = document.createElement('button');
+    cookieDelete.append(cookieDeleteBtn);
+    cookieDeleteBtn.textContent = 'удалить';
+
+    cookieDeleteBtn.addEventListener('click', () => {
+      document.cookie = `${name}=deleted; max-age=0`;
+      cookieRow.remove()
+    })
+  }
+}
+
+function renderList() {
+  listTable.innerHTML = '';
+  for (cook of cookieArray) {
+    const [cookName, cookValue] = cook.split('=');
+    cookie.row();
+    cookie.name(cookName);
+    cookie.value(cookValue);
+    cookie.delete(cookName)
+  }
+}
+
+if (!filterNameInput.value) {
+  renderList()
+}
+
+filterNameInput.addEventListener('input', function (e) {
+  listTable.innerHTML = '';
+  if (filterNameInput.value) {
+    for (cook of cookieArray) {
+      const [cookName, cookValue] = cook.split('=');
+      if (
+        cookName.toLowerCase().includes(`${filterNameInput.value}`.toLowerCase()) || 
+        cookValue.toLowerCase().includes(`${filterNameInput.value}`.toLowerCase())
+      ) {
+        cookie.row();
+        cookie.name(cookName);
+        cookie.value(cookValue);
+        cookie.delete(cookName)
+      } 
+    }
+    if (!listTable.innerHTML) {
+        listTable.innerHTML = 'ничего не найдено';
+    }
+  } else {
+    renderList()
+  }
+});
+
+addButton.addEventListener('click', () => {
+  const addNameInput = document.getElementById('add-name-input');
+  const addValueInput = document.getElementById('add-value-input');
+  document.cookie = `${addNameInput.value}=${addValueInput.value}`;
+  location.reload()
+});
 
 listTable.addEventListener('click', (e) => {});
+
+
+
+
+
+
+
