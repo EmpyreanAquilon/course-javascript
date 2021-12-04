@@ -9,14 +9,12 @@
  Пример:
    forEach([1, 2, 3], (el) => console.log(el))
  */
-const array = []
 function forEach(array, fn) {
   for (let i = 0; i < array.length; i++) {
-    fn(array[i], i, array)
+    fn(array[i], i, array);
   }
-  return array
+  return array;
 }
-forEach(array, fn)
 
 /*
  Задание 2:
@@ -27,15 +25,14 @@ forEach(array, fn)
  Пример:
    map([1, 2, 3], (el) => el ** 2) // [1, 4, 9]
  */
-const newArray = []
+const newArray = [];
 function map(array, fn) {
   for (let i = 0; i < array.length; i++) {
     // newArray.push(fn(array[i]))
-    newArray[i] = fn(array[i], i, array)
+    newArray[i] = fn(array[i], i, array);
   }
-  return newArray
+  return newArray;
 }
-newArray = map(array, fn)
 
 /*
  Задание 3:
@@ -46,16 +43,15 @@ newArray = map(array, fn)
  Пример:
    reduce([1, 2, 3], (all, current) => all + current) // 6
  */
-let initialValue
+let initialValue;
 function reduce(array, fn, initial) {
-  initialValue = (initial !== undefined) ? initial : array[0];
+  initialValue = initial !== undefined ? initial : array[0];
   for (let i = 0; i < array.length; i++) {
-    initial ? i : i = 1;
-    initialValue = fn(initialValue, array[i], i, array)
+    initial ? i : (i = 1);
+    initialValue = fn(initialValue, array[i], i, array);
   }
-  return initialValue
+  return initialValue;
 }
-initialValue = reduce(array, fn, initial)
 
 /*
  Задание 4:
@@ -65,12 +61,12 @@ initialValue = reduce(array, fn, initial)
  Пример:
    upperProps({ name: 'Сергей', lastName: 'Петров' }) вернет ['NAME', 'LASTNAME']
  */
-const upperArray = []
+const upperArray = [];
 function upperProps(obj) {
-  for (key in obj) {
-    upperArray.push(key.toUpperCase)
+  for (const key in obj) {
+    upperArray.push(key.toUpperCase);
   }
-  return upperArray
+  return upperArray;
 }
 
 /*
@@ -84,19 +80,24 @@ function upperProps(obj) {
    obj.foo = 2;
    console.log(obj.foo); // 4
  */
-const proxyObj = {}
 function createProxy(obj) {
-  for (key in obj) {
-    obj = {
-      get key() {},
-      set key(value) {
-        return value *= value
-      }
-    }
-  }
-  // метод set
-  // obj.set = (a,b,c) => {}
-  return obj
+  return new Proxy(obj, {
+    set(obj, key, value) {
+      obj[key] = value ** 2;
+      return true;
+    },
+  });
+  // for (key in obj) {
+  //   obj = {
+  //     get key() {},
+  //     set key(value) {
+  //       return value *= value
+  //     }
+  //   }
+  // }
+  // // метод set
+  // // obj.set = (a,b,c) => {}
+  // return obj
 }
 
 export { forEach, map, reduce, upperProps, createProxy };
