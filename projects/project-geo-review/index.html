@@ -1,22 +1,53 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>project-geo-review</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=e87c6741-d3da-4a6d-8bbd-222554537546
-    &lang=ru_RU" type="text/javascript"></script>
-</head>
-<body>
-    <div id="map"></div>
-    <!-- <form class="feedback">
+<style>
+* {
+    box-sizing: border-box;
+}
+html,body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+#map {
+    width: 100vw;
+    height: 100vh;
+}
+.form {
+    width: 250px;
+    padding: 10px 26px 10px 17px;
+}
+.field input, .field textarea {
+    padding: 11px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.field textarea {
+    resize: none;
+}
+.form button {
+    background: #FF8663;
+    border: none;
+    border-radius: 3px;
+    color: #fff;
+    padding: 10px 15px;
+}
+</style>
+
+<div id="map"></div>
+
+<script type="template" id="addFormTemplate">
+    <div class="review-list"></div>
+    <div class="form" data-role="review-form">
         <h3>Отзыв:</h3>
-        <input type="text" class="feedback__input_1" placeholder="Укажите ваше имя">
-        <input type="text" class="feedback__input_2" placeholder="Укажите место">
-        <input type="text" class="feedback__input_3" placeholder="Оставить отзыв">
-        <button class="feedback__btn add" id="add">Добавить</button>
-    </form> -->
-    <script src="ymap.js"></script>
-</body>
-</html>
+        <div class="field">
+            <input type="text" data-role="review-name" placeholder="Укажите ваше имя">
+        </div>
+        <div class="field">
+            <input type="text" data-role="review-place" placeholder="Укажите место">
+        </div>
+        <div class="field">
+            <textarea rows="5" data-role="review-text" placeholder="Оставьте отзыв"></textarea>
+        </div>
+        <button data-role="review-add"Добавить></button>
+        <span class="form-error"></span>
+    </div>
+</script>
