@@ -26,6 +26,7 @@
       "eslint --cache --fix"
     ]
   },
+  
   "dependencies": {
     "@babel/core": "^7.10.4",
     "@babel/plugin-transform-runtime": "^7.10.4",

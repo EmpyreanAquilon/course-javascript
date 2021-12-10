@@ -24,10 +24,6 @@ export default class InteractiveMap {
     }
 
     initMap() {
-        this.map = new ymaps.Map(this.mapId, {
-            center: [56.824625, 60.609080],
-            zoom: 12,
-        });
         this.clusterer = new ymaps.Clusterer({
             groupByCoordinates: true,
             clusterDisableClickZoom: true,
@@ -36,6 +32,10 @@ export default class InteractiveMap {
         this.clusterer.events.add('click', (e) => {
             const coords = e.get('target').geometry.getCoordinates();
             this.onClick(coords);
+        });
+        this.map = new ymaps.Map(this.mapId, {
+            center: [56.824625, 60.609080],
+            zoom: 12,
         });
         this.map.events.add('click', (e) => this.onClick(e.get('coords')));
         this.map.geoObjects.add(this.clusterer);
@@ -61,8 +61,4 @@ export default class InteractiveMap {
     closeBalloon() {
         this.map.balloon.close();
     }
-    
-    checkBalloon() {
-        return this.map.balloon.isOpen();
-    }
-};
+}
