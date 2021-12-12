@@ -1,0 +1,93 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+html,body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+ul {
+    list-style: none;
+    padding: 0;
+}
+.hidden {
+    display: none !important;
+}
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
+#login {
+    display: flex;
+    /* display: none; */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: 300px;
+    background-image: linear-gradient(180deg, #12b8a4 8%, #3bff72 95%);
+    border-radius: 10px;
+}
+.login-name-input {
+    padding: 3px 6px;
+    margin-bottom: 15px;
+}
+.login-submit {
+    padding: 5px 20px;
+    cursor: pointer;
+}
+.login-error {
+    margin-bottom: 15px;
+}
+#main {
+    display: flex;
+    /* display: none; */
+    width: 100%;
+    height: 100%;
+}
+.left-side {
+    color: #fff;
+    width: 30%;
+    height: 100%;
+    background-image: linear-gradient(180deg, #12b8a4 8%, #3bff72 95%);
+    padding: 10px;
+}
+.user-info {
+    margin-bottom: 20px;
+}
+.user-photo {
+    display: inline-block;
+    vertical-align: middle;
+}
+.user-name {
+    display: inline-block;
+    padding: 5px 0 5px 10px;
+}
+.user-list li {
+    margin: 10px 0 0 10px;
+}
+.right-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.messages-container {
+    flex: 1;
+    overflow: auto;
+}
+.input-container {
+    display: flex;
+}
+.message-input {
+    flex: 1;
+}
+.message {
+    padding: 20px;
+    margin: 1px;
+    border: solid 1px black;
+}

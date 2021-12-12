@@ -12,7 +12,8 @@
     "watch": "webpack-dev-server --progress --colors",
     "start": "npm run watch",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "ws": "node projects/mega-chat/server.js"
   },
   "author": "",
   "license": "MIT",
