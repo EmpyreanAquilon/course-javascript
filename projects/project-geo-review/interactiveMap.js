@@ -1,7 +1,8 @@
 export default class InteractiveMap {
-    constructor (mapId, onClick) {
+    constructor (mapId, onClick, geoStorage) {
         this.mapId = mapId;
         this.onClick = onClick;
+        this.geoStorage = geoStorage;
     }
 
     async init() {
@@ -35,9 +36,9 @@ export default class InteractiveMap {
         });
         this.clusterer.events.add('click', (e) => {
             const coords = e.get('target').geometry.getCoordinates();
-            this.onClick(coords);
+            this.onClick(coords, this.geoStorage);
         });
-        this.map.events.add('click', (e) => this.onClick(e.get('coords')));
+        this.map.events.add('click', (e) => this.onClick(e.get('coords'), this.geoStorage));
         this.map.geoObjects.add(this.clusterer);
     }
 
@@ -45,9 +46,9 @@ export default class InteractiveMap {
         const placemark = new ymaps.Placemark(coords);
         placemark.events.add('click', (e) => {
             const coords = e.get('target').geometry.getCoordinates();
-            this.onClick(coords);
+            this.onClick(coords, this.geoStorage);
         });
-        this.clusterer.add(placemark)
+        this.clusterer.add(placemark);
     }
 
     openBalloon(coords, content) {

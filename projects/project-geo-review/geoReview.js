@@ -19,119 +19,121 @@ import InteractiveMap from "./interactiveMap.js";
 
 export default class GeoReview {
     constructor () {
+        this.geoStorage = this.loadStorage();
         this.formTemplate = document.querySelector('#addFormTemplate').innerHTML;
-        this.map = new InteractiveMap('map', this.onClick.bind(this));
+        this.map = new InteractiveMap('map', this.onClick.bind(this), this.geoStorage);
         this.map.init().then(this.onInit.bind(this));
-        this.geoList = this.callLocalStorage('get');
-        
+        this.clearBtn()
     }
     
-    [{coords: [56.821707064402744,60.603930158691426], review: {name: 1, place: 2, text: 3}}]
-        
-    onInit() {
-    //     const coords = await this.callApi('coords');
-    //     for (const item of coords) {
-    //         for (let i = 0; i < item.total; i++) {
-    //             this.map.createPlacemark(item.coords);
-    //         }
-    //     }
+    clearBtn() {
+        const clrBtn = document.createElement('button');
+        clrBtn.classList.add('clrBtn');
+        clrBtn.textContent = 'Очистить';
+        document.body.appendChild(clrBtn);
+        clrBtn.addEventListener('click', () => {
+            localStorage.clear();
+            location.reload();
+            this.geoStorage = this.loadStorage();
+        })
+    }
 
-        for (const item of this.geoList) {
-            this.map.createPlacemark(item.coords)
-        }
+    loadStorage() {
+        if (!localStorage.getItem('geoLocal')) {
+            localStorage.setItem('geoLocal', JSON.stringify([]))
+        } else {
+            this.geoStorage = JSON.parse(localStorage.getItem('geoLocal'));
+        };
+
+        return this.geoStorage
+    }
+
+    onInit() {
+        if (!localStorage.getItem('geoLocal')) {
+            localStorage.setItem('geoLocal', JSON.stringify([]))
+        } else {
+            this.geoStorage = JSON.parse(localStorage.getItem('geoLocal'));
+            console.log('Массив с геообъектами:');
+            console.log(this.geoStorage);
+        };
+
+        for (const item of this.geoStorage) {
+            this.map.createPlacemark(item.coords);
+        };
+        
         document.addEventListener('click', this.onDocumentClick.bind(this));
     }
 
-    
-
-    callLocalStorage(method, data) {
-
-        if (method === 'get') {
-            return localStorage.getItem('geo');
-        } else if (method === 'set') {
-            geoList.push(data);
-            localStorage.setItem('geo', geoList);
-
-        }
-    }
-
-    createForm(coords, reviews) {
+    createForm(coords, storage) {
         const root = document.createElement('div');
         root.innerHTML = this.formTemplate;
         const reviewList = root.querySelector('.review-list')
         const reviewForm = root.querySelector('[data-role=review-form]');
         reviewForm.dataset.coords = JSON.stringify(coords);
 
-        // for (const item of reviews) {
-        //     const div = document.createElement('div');
-        //     div.classList.add('review-item');
-        //     div.innerHTML = `
-        //     <div>
-        //         <b>${item.name}</b> [${item.place}]
-        //     </div>
-        //     <div>${item.text}</div>
-        //     `;
-        //     reviewList.appendChild(div)
-        // }
+        if (storage.length) {
+            for (const item of storage) {
+                if (JSON.stringify(coords) === JSON.stringify(item.coords)) {
+                    for (const rev of item.reviews) {
+                        const review = document.createElement('div');
+                        review.classList.add('review-item');
+                        review.innerHTML = `
+                        <div>
+                            <b>${rev.name}</b> [${rev.place}]
+                        </div>
+                        <div>${rev.text}</div>
+                        `;
+                        reviewList.appendChild(review)
+                    }
+                }
+            }
+        }
 
         return root;
     }
 
-    onClick(coords, reviews) {
-        const form = this.createForm(coords, reviews);
-        this.map.openBalloon(coords, form.innerHTML);
+    onClick(coords, storage) {
+        const form = this.createForm(coords, storage);
 
-        // if (!checkBalloon()) {
-
-        // } else {
-        //     closeBalloon();
-        // }
-
-        // при работе с сервером
-        // const list = await this.callApi('list', {coords});
-        // this.map.setBalloonContent(form.innerHTML);
+        if (!this.map.checkBalloon()) {
+            this.map.openBalloon(coords, form.innerHTML);
+        } else {
+            this.map.closeBalloon();
+        }
     }
 
-    async onDocumentClick(e) {
+    geoData(storage, data, coords) {
+        for (const item of storage) {
+            if (JSON.stringify(coords) === JSON.stringify(item.coords)) {
+                item.reviews = item.reviews.concat(data.reviews);
+                localStorage.setItem('geoLocal', JSON.stringify(this.geoStorage));
+                console.log(this.geoStorage)
+                return null
+            }
+        }
+        this.geoStorage.push(data);
+        localStorage.setItem('geoLocal', JSON.stringify(this.geoStorage));
+        // console.log(JSON.parse(localStorage.getItem('geoLocal')));
+    }
+
+    onDocumentClick(e) {
         if (e.target.dataset.role === 'review-add') {
             const reviewForm = document.querySelector('[data-role=review-form]');
             const coords = JSON.parse(reviewForm.dataset.coords);
             const data = {
                 coords: coords,
-                review: {
-                    name: document.querySelector('[data-role=review-name]').value,
-                    place: document.querySelector('[data-role=review-place]').value,
-                    text: document.querySelector('[data-role=review-text]').value,
-                },
+                reviews: [
+                    {
+                        name: reviewForm.querySelector('[data-role=review-name]').value,
+                        place: reviewForm.querySelector('[data-role=review-place]').value,
+                        text: reviewForm.querySelector('[data-role=review-text]').value,
+                    },
+                ],
+                
             };
-
-
-            // console.log(localStorage)
-            // сохраняем в localStorage
-            this.callLocalStorage('set', data);
-
+            this.geoData(this.geoStorage, data, coords);
             this.map.createPlacemark(coords);
             this.map.closeBalloon();
-
-            // на случай хранения на сервере
-            // try {
-            //     await this.callApi('add', data);
-            //     this.map.createPlacemark(coords);
-            //     this.map.closeBalloon();
-            // } catch (e) {
-            //     const formError = document.querySelector('.form-error');
-            //     formError.innerText = e.message;
-            // }
         }
     }
-
-    // на случай хранения на сервере
-    // async callApi(method, body = {}) {
-    //     const res = await fetch(`/geo-review/${method}`, {
-    //         method: 'post',
-    //         body: JSON.stringify(body),
-    //     });
-    //     return await res.json();
-    // }
-
 };
