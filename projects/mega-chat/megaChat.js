@@ -6,21 +6,33 @@ import MessageList from './ui/messageList.js';
 import MessageSender from './ui/messageSender.js';
 import WSClient from './wsClient.js'
 
+`ws://${location.host}/projects/mega-chat/ws`
+
 export default class Megachat {
     constructor() {
-        this.wsClient = new WSClient(`ws://${location.host}/projects/mega-chat/ws`,this.onMessage.bind(this));
+        this.wsClient = new WSClient('ws://localhost:8000',this.onMessage.bind(this));
 
         this.ui = {
             loginWindow: new LoginWindow(document.querySelector('#login'), this.onLogin.bind(this)),
-            mainWindow: new MainWindow(document.querySelector('#main'), this.onLogin.bind(this)),
-            userName: new UserName(document.querySelector(''), this.onLogin.bind(this)),
-            userList: new UserList(document.querySelector('[data-role=user-list]'), this.onLogin.bind(this)),
-            messageList: new MessageList(document.querySelector('[data-role=message-list]'), this.onLogin.bind(this)),
-            messageSender: new MessageSender(document.querySelector('[data-role=message-sender]'), this.onLogin.bind(this)),
-            userPhoto: new UserPhoto(document.querySelector('[data-role=user-photo]'), this.onUpload.bind(this)),
+            mainWindow: new MainWindow(document.querySelector('#main')),
+            userName: new UserName(document.querySelector('[data-role=user-name]')),
+            userList: new UserList(document.querySelector('[data-role=user-list]')),
+            
+            messageList: new MessageList(document.querySelector('[data-role=message-list]')),
+
+            messageSender: new MessageSender(document.querySelector('[data-role=message-sender]'), this.onSend.bind(this)),
+            // userPhoto: new UserPhoto(document.querySelector('[data-role=user-photo]'), this.onUpload.bind(this)),
         };
 
         this.ui.loginWindow.show();
+    }
+
+    async onLogin(name) {
+        await this.wsClient.connect();
+        this.wsClient.sendHello(name);
+        this.ui.loginWindow.hide();
+        this.ui.mainWindow.show();
+        this.ui.userName.set(name);
     }
 
     onUpload(data) {
@@ -40,20 +52,12 @@ export default class Megachat {
         this.ui.messageSender.clear();
     }
 
-    async onLogin(name) {
-        await this.wsClient.connect();
-        this.wsClient.sendHello(name);
-        this.ui.loginWindow.hide();
-        this.ui.mainWindow.show();
-        this.ui.userName.set(name);
-    }
-
     onMessage({ type, from, data }) {
-        console.log(type, from, data);
+        // console.log(type, from, data);
 
         if (type === 'hello') {
             this.ui.userList.add(from);
-            this.ui.message.addSystemMessage(`${from} вошел в чат`);
+            this.ui.messageList.addSystemMessage(`${from} вошел в чат`);
         } else if (type === 'user-list') {
             for (const item of data) {
                 this.ui.userList.add(item);
@@ -63,9 +67,9 @@ export default class Megachat {
             this.ui.messageList.addSystemMessage(`${from} вышел из чата`);
         } else if (type === 'text-message') {
             this.ui.messageList.add(from, data.message);
-    }
-};
-
+        }
+    };
+}
 
 
 

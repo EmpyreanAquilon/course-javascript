@@ -13,7 +13,7 @@
     "start": "npm run watch",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "ws": "node projects/mega-chat/server.js"
+    "ws": "node projects/mega-chat/server/server.js"
   },
   "author": "",
   "license": "MIT",
